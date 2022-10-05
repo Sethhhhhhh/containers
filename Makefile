@@ -1,11 +1,11 @@
 NAME			=	ft_containers
 
-INC_DIR			=	./containers
-OBJ_DIR			=   ./objs
+INC_DIR			=	./srcs/containers
+OBJ_DIR			=   ./srcs/objs
 SRC_DIR			= 	$(shell find testers -type d)
 vpath 				%.cpp $(foreach dir, $(SRC_DIR), $(dir):)
 
-SRCS			=	main.cpp \
+SRCS			=	srcs/main.cpp \
 
 OBJS			= 	$(addprefix $(OBJ_DIR)/, $(SRCS:%.cpp=%.o))
 
@@ -25,6 +25,9 @@ $(OBJ_DIR)/%.o	: 	%.cpp $(INC_DIR)/*.hpp | $(OBJ_DIR)
 
 $(OBJ_DIR) 		:
 					mkdir -p $@
+
+test			:	$(OBJS) $(INC_DIR)/*.hpp
+					$(CC) $(FLAGS) -o $(NAME) $(OBJS) -I $(INC_DIR)
 
 .PHONY 			: 	clean
 clean			:
