@@ -15,6 +15,31 @@ namespace ft {
 	class map {
 
 		public:
+			class value_compare : public std::binary_function<value_type, value_type, bool> {
+				friend class map<Key, T, Compare, Alloc>;
+				
+				protected:
+					Compare comp;
+					value_compare (Compare c) : comp(c) {}
+
+				public:
+					bool operator()(const value_type& x, const value_type& y) const {
+						return comp(x.first, y.first);
+					}
+			}
+
+		private:
+			/*
+			**	Typedef
+			*/
+
+			typedef	red_black_tree<T, value_compare, Alloc>	_tree_type;
+			typedef typename _tree_type::pair_type			pair_type;
+			typedef typename _tree_type::pair_range			pair_range;
+			typedef typename _tree_type::const_pair_range	const_pair_range;
+
+		public:
+			
 			typedef Key										key_type;
 			typedef	T										mapped_type;
 			typedef pair<const key_type, mapped_type>		value_type;
@@ -26,6 +51,8 @@ namespace ft {
 			typedef	allocator_type::const_pointer			const_pointer;
 			typedef ptrdiff_t								difference_type;
 			typedef size_t									size_type;
+
+			_tree_type	tree;
 
 			/*
 			**	Constructor
@@ -50,24 +77,24 @@ namespace ft {
 			** Iterators
 			*/
 
-			iterator begin() {}
-			const_iterator begin() const {}
+			iterator begin() { return tree.begin(); }
+			const_iterator begin() const { return tree.begin(); }
 
-			iterator end() {}
-			const_iterator end() const {}
+			iterator end() { return tree.end(); }
+			const_iterator end() const { return tree.end(); }
 
-			reverse_iterator rbegin() {}
-			const_reverse_iterator rbegin() const {}
+			reverse_iterator rbegin() { return tree.rbegin(); }
+			const_reverse_iterator rbegin() const { return tree.rbegin(); }
 
-			reverse_iterator rend() {}
-			const_reverse_iterator rend() const {}
+			reverse_iterator rend() { return tree.rend(); }
+			const_reverse_iterator rend() const { return tree.rend(); }
 
 			/*
 			** Capacity
 			*/
 
 			bool empty() const {}
-			size_type size() const {}
+			size_type size() const { return tree.get_size(); }
 			size_type max_size() const {}
 
 			/*
@@ -81,19 +108,24 @@ namespace ft {
 			** Modifiers
 			*/
 
-			pair<iterator, bool> insert(const value_type& val) {}
-			iterator insert(iterator position, const value_type& val) {}
+			pair<iterator, bool> insert(const value_type& val) { return tree.insert(val); }
+			iterator insert(iterator position, const value_type& val) {
+				return tree.insert(val, position);
+			}
 			
 			template <typename InputIterator>
-			void insert(InputIterator first, InputIterator last) {}
+			void insert(InputIterator first, InputIterator last) {
+				while (first != last)
+					tree.insert(*first++);
+			}
 
 			void erase(iterator position) {}
 			size_type erase(const key_type& k) {}
 			void erase(iterator first, iterator last) {}
 
-			void swap(map& x) {}
+			void swap(map& x) { tree.swap(x.tree); }
 
-			void clear() {}
+			void clear() { tree.clean(); }
 
 			/*
 			** Observers

@@ -1,19 +1,31 @@
 #ifndef __RED_BLACK_TREE__
 #define __RED_BLACK_TREE__
 
+#include <algorithm>
+
 namespace ft {
 
 	template <typename T, typename Cmp, typename Alloc>
 	class rbtree {
 
 		private:
-			typedef	size_t					size_type;
-			typedef ptrdiff_t				difference_type;
-			typedef T						value_type;
-			typedef red_black_tree_node<T>	node_type;
-			typedef red_black_tree_node<T>*	node_pointer;
 
-			Cmp	_key_compare;
+			/*
+			** Typedef
+			*/
+
+			typedef	size_t								size_type;
+			typedef ptrdiff_t							difference_type;
+			typedef T									value_type;
+			typedef red_black_tree_node<value_type>		node_type;
+			typedef red_black_tree_node<value_type>*	node_pointer;
+			
+			/*
+			** Variable
+			*/
+
+			Cmp			_key_compare;
+			size_type	_size;
 
 			/*
 			** Constructor
@@ -54,10 +66,10 @@ namespace ft {
 			}
 
 			/*
-			** Insert
+			** Insert	
 			*/
 
-			void	insert(const value_type &z) {
+			pair_type	insert(const value_type &z) {
 				node_pointer y = nullptr;
 				node_pointer x = _root;
 
@@ -79,8 +91,37 @@ namespace ft {
 					z->right = nullptr;
 					z->color = true;
 					insert_fix(z);
+					_size++;
 				}
 			}
+
+
+			pair_type	insert(const value_type &z, node_pointer pos) {
+				node_pointer y = nullptr;
+				node_pointer x = (pos != nullptr) ? pos : _root;
+
+				while (x != nullptr) {
+					y = x;
+					if (_key_compare(z, y))
+						x = x->left;	
+					else
+						x = x->right;
+
+					z->p = y;
+					if (y == nullptr)
+						_root = z;
+					else if (_key_compare(z, y))
+						y->left = z;
+					else
+						y->right = z;
+					z->left = nullptr;
+					z->right = nullptr;
+					z->color = true;
+					insert_fix(z);
+					_size++;
+				}
+			}
+
 			void	insert_fix(node_pointer z) {
 				while (z->p->color) {
 					if (z->p == z->p->p->left) {
@@ -161,6 +202,7 @@ namespace ft {
 				}
 				if (!color)
 					remove_fix(x);
+				--size;
 			}
 			void	remove_fix(node_pointer x) {
 				node_pointer	w;
@@ -253,6 +295,44 @@ namespace ft {
 				y->right = x;
 				x->p = y;
 			}
+		
+		public:
+
+			/*
+			** Typedef
+			*/
+
+			typedef ft::red_black_tree_iterator<value_type, node_type>				iterator;
+			typedef	ft::red_black_tree_iterator<const value_type, const node_type>	const_iterator;
+			typedef ft::reverse_iterator<iterator>									reverse_iterator;
+			typedef	ft::reverse_iterator<const iterator>							const_reverse_iterator;
+
+			void	swap(red_black_tree &tree) {
+				std::swap(_root, tree->root);
+				std::swap(_size, tree->_size);
+			}
+
+			size_type	get_size() {
+				return _size;
+			}
+
+			/*
+			** Iterators
+			*/
+
+			iterator		begin() { return iterator(mininum(_root)); }
+			const_iterator	begin() { return const_iterator(mininum(_root)) }
+
+			iterator		end() { return iterator(nullptr); }
+			const_iterator	end() { return const_iterator(nullptr); }
+
+			reverse_iterator	rbegin() { return reverse_iterator(end()); }
+			const_reverse_iterator	rbegin() const { const_reverse_iterator(end()); }
+
+			reverse_iterator	rend() { reverse_iterator(begin()); }
+			const_reverse_iterator	rend() const { const_reverse_iterator(begin()); }
+
+
 	};
 };
 
