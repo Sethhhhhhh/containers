@@ -25,12 +25,19 @@ namespace ft {
 			** Constructor
 			*/
 
-			red_black_tree_iterator() {};
-			red_black_tree_iterator(const red_black_tree_iterator &x) {};
+			red_black_tree_iterator() : node() {}
+			red_black_tree_iterator(node_pointer x) : node(x) {}
+			red_black_tree_iterator(const red_black_tree_iterator &x) : node(x.node) {}
+
 			red_black_tree_iterator& operator=(const red_black_tree_iterator &x) {
 				if (this != &x)
 					node = x.node;
 				return *this;
+			}
+
+			operator    red_black_tree_iterator<value_type const, Node const>() const
+			{
+				return red_black_tree_iterator<value_type const, Node const>(node);
 			}
 
 			reference operator*() { return *node->data; }
@@ -38,16 +45,38 @@ namespace ft {
 			const_reference operator*() const { return *node->data; }
 			const_pointer operator->() const { return node->data; }
 
-			red_black_tree_iterator operator++() {}
+			red_black_tree_iterator operator++() {
+				increment();
+				return *this;
+			}
 
-			red_black_tree_iterator operator++(int) {}
+			red_black_tree_iterator operator++(int) {
+				red_black_tree_iterator	x(*this);
+				
+				increment();
+				
+				return x;
+			}
 
-			red_black_tree_iterator operator--() {}
+			red_black_tree_iterator operator--() {
+				decrement();
+				return *this;
+			}
 
-			red_black_tree_iterator operator--(int) {}
+			red_black_tree_iterator operator--(int) {
+				red_black_tree_iterator	x(*this);
 
-			bool	operator==(const red_black_tree_iterator &x) const { return node == x.node; }
-			bool	operator!=(const red_black_tree_iterator &x) const { return node != x.node; }
+				decrement();
+				
+				return *this;
+			}
+
+			bool	operator==(const red_black_tree_iterator &x) const {
+				return node == x.node;
+			}
+			bool	operator!=(const red_black_tree_iterator &x) const {
+				return node != x.node;
+			}
 		
 		protected:
 			void	increment() {
@@ -78,11 +107,11 @@ namespace ft {
 					while (node->right != nullptr)
 						node = node->right;
 				} else {
-					node_pointer tmp = node->parent;
+					node_pointer tmp = node->p;
 
 					while (tmp != nullptr && node == tmp->left) {
 						node = tmp;
-						tmp = tmp->parent;
+						tmp = tmp->p;
 					}
 					node = tmp;
 				}

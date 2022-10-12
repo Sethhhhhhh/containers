@@ -14,26 +14,28 @@ namespace ft {
 
 			typedef red_black_tree_node		node;
 			typedef red_black_tree_node*	pointer;
-			typedef T*						data;
+			typedef T*						data_pointer;
 
 			/*
 			**	Variable
 			*/
 
-			bool	color = true;
-			pointer	p;
-			pointer	left;
-			pointer	right;
+			data_pointer	data;
+			bool			color;
+			pointer			p;
+			pointer			left;
+			pointer			right;
+			pointer			nil;
 
-			pointer	min;
-			pointer	max;
+			pointer			min;
+			pointer			max;
 
 			/*
 			**	Constructor
 			*/
 
-			red_black_tree_node() : color(false), p(), left(), right(), min(), max() {};
-			
+			red_black_tree_node() : color(false), p(), left(), right(), min(), max(), nil() {};
+
 			red_black_tree_node(const red_black_tree_node& x) {
 				*this = x;
 			};
@@ -45,6 +47,7 @@ namespace ft {
 				right = x.right;
 				min = x.min;
 				max = x.max;
+				nil	= x.nil;
 
 				return *this;
 			};
