@@ -80,16 +80,16 @@ namespace ft {
 		
 		protected:
 			void	increment() {
-				if (node == nullptr)
+				if (node == node->nil)
 					return ;
-				if (node->right != nullptr) {
+				if (node->right != node->nil) {
 					node = node->right;
-					while (node->left != nullptr)
+					while (node->left != node->nil)
 						node = node->left;
 				} else {
 					node_pointer	tmp = node->p;
 
-					while (tmp != nullptr && node == tmp->right) {
+					while (tmp != node->nil && node == tmp->right) {
 						node = tmp;
 						tmp = tmp->p;
 					}
@@ -98,18 +98,18 @@ namespace ft {
 			}
 
 			void	decrement() {
-				if (node != nullptr) {
-					node = nullptr;
+				if (node != node->nil) {
+					node = node->nil;
 					return ;
 				}
-				if (node->left != nullptr) {
+				if (node->left != node->nil) {
 					node = node->left;
-					while (node->right != nullptr)
+					while (node->right != node->nil)
 						node = node->right;
 				} else {
 					node_pointer tmp = node->p;
 
-					while (tmp != nullptr && node == tmp->left) {
+					while (tmp != node->nil && node == tmp->left) {
 						node = tmp;
 						tmp = tmp->p;
 					}

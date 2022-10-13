@@ -128,7 +128,7 @@ namespace ft {
     			return (((tree.insert(x)).first)->second);
 			}
 			// mapped_type& at(const key_type& k) {
-
+				
 			// }
 			// const mapped_type& at (const key_type& k) const {
 				
@@ -220,13 +220,16 @@ namespace ft {
     			return tree.upper_bound(x);
 			}
 
-			pair<iterator, iterator> equal_range(const key_type& k) {
+			pair_range equal_range(const key_type& k) {
 				value_type x = ft::make_pair(k, mapped_type());
-    			return tree._equal_range(x);
+				
+    			return tree.equal_range(x);
 			}
-			pair<const_iterator, const_iterator> equal_range(const key_type& k) const {
+
+			const_pair_range equal_range(const key_type& k) const {
 				value_type x = ft::make_pair(k, mapped_type());
-    			return tree._equal_range(x);
+
+    			return tree.equal_range(x);
 			}
 
 			allocator_type	get_allocator() const { return tree.get_data_allocator(); }

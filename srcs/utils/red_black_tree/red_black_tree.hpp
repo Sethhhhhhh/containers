@@ -6,6 +6,8 @@
 #include "red_black_tree_iterator.hpp"
 #include "../reverse_iterator.hpp"
 
+#include <iostream>
+
 namespace ft {
 
 	template <typename T, typename Cmp, typename Alloc>
@@ -69,7 +71,7 @@ namespace ft {
 			node_pointer	find(const value_type &x) const {
 				node_pointer y = _root;
 		
-				while (y != nullptr && !_is_equal(x, *y->data)) {
+				while (y != _nil && !is_equal(x, *y->data)) {
 					if (_key_compare(x, *y->data))
 						y = y->left;
 					else
@@ -247,13 +249,13 @@ namespace ft {
 			rbtree(const rbtree &x) {
 				clean();
 				for (const_iterator i = x.begin(); i != x.end(); i++)
-					insert(*i, _root);
+					insert(*i);
 				return *this;
 			};
 			rbtree & operator=(const rbtree &x) {
 				clean();
 				for (const_iterator i = x.begin(); i != x.end(); i++)
-					insert(*i, _root);
+					insert(*i);
 				return *this;
 			};
 
@@ -327,7 +329,9 @@ namespace ft {
 
 				while (x != _nil) {
 					y = x;
-					if (_key_compare(v, *x->data))
+					if (is_equal(v, *x->data))
+            			return pair_type(iterator(x), false);
+					else if (_key_compare(v, *x->data))
 						x = x->left;	
 					else
 						x = x->right;
@@ -346,7 +350,6 @@ namespace ft {
 				z->left = _nil;
 				z->right = _nil;
 				z->color = true;
-				insert_fix(z);
 				_size++;
 
 				return pair_type(iterator(z), true);
@@ -391,32 +394,39 @@ namespace ft {
 				while (z->p->color) {
 					if (z->p == z->p->p->left) {
 						node_pointer y = z->p->right;
+						
 						if (y->color) {
 							z->p->color = false;
 							y->color = false;
 							z->p->p->color = true;
-						} else {
+
+							z = z->p->p;
+						}
+						else {
 							if (z == z->p->right) {
 								z = z->p;
 								left_rotate(z);
 							}
 							z->p->color = false;
-							z->p->color = true;
+							z->p->p->color = true;
 							right_rotate(z->p->p);
 						}
-					} else {
+					}
+					else {
 						node_pointer y = z->p->left;
 						if (y->color) {
 							z->p->color = false;
 							y->color = false;
 							z->p->p->color = true;
+
+							z = z->p->p;
 						} else {
 							if (z == z->p->left) {
 								z = z->p;
 								right_rotate(z);
 							}
 							z->p->color = false;
-							z->p->color = true;
+							z->p->p->color = true;
 							left_rotate(z->p->p);
 						}
 					}
@@ -468,8 +478,8 @@ namespace ft {
 			}
 
 			const_iterator	lower_bound(const value_type &x) const {
-				iterator	it = begin();
-				iterator	ite = end();
+				const_iterator	it = begin();
+				const_iterator	ite = end();
 
 				while(it != ite) {
 					if (!_key_compare(*it, x))
@@ -492,8 +502,8 @@ namespace ft {
 			}
 
 			const_iterator	upper_bound(const value_type &x) const {
-				iterator	it = begin();
-				iterator	ite = end();
+				const_iterator	it = begin();
+				const_iterator	ite = end();
 
 				while(it != ite) {
 					if (_key_compare(*it, x))
@@ -503,6 +513,26 @@ namespace ft {
 				return it;
 			}
 
+			pair_range	equal_range(const value_type &v) {
+				iterator it = upper_bound(v);
+				iterator ite = lower_bound(v);
+
+				return pair_range(ite, it);
+			}
+
+			const_pair_range	equal_range(const value_type &v) const {
+				const_iterator it = upper_bound(v);
+				const_iterator ite = lower_bound(v);
+
+				return const_pair_range(ite, it);
+			}
+
+
+			size_type	get_max_size() const {
+				return _node_alloc.max_size() / sizeof(T);
+			}
+
+			Cmp	get_key_compare() const { return _key_compare; }
 
 	};
 };
