@@ -11,15 +11,13 @@ int	main(void) {
 
 	// std::cout << (x[5]) << std::endl;
 
-	ft::map<int, char>	y;
+	std::list<T3> lst;
+	unsigned int lst_size = 7;
+	for (unsigned int i = 0; i < lst_size; ++i)
+		lst.push_back(T3(lst_size - i, i));
 
-	y.insert(ft::pair<int, char>(0, 'a'));
-	y.insert(ft::pair<int, char>(1, 'b'));
-
-	ft::map<int, char>::iterator it = y.begin(), ite = y.end();
-	for (; it != ite; ++it) {
-		std::cout << "- " << it->first << it->second << std::endl;
-	}
+	std::cout << "ok" << std::endl;
+	TESTED_NAMESPACE::map<T1, T2> mp(lst.begin(), lst.end());
 
 	return 0;
 }

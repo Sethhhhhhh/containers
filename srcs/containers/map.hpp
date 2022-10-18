@@ -71,21 +71,23 @@ namespace ft {
 
 			template <typename InputIterator>
 			map(InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : tree(comp, alloc) {
-				while (first != last)
+				while (first != last) {
         			tree.insert(*first++);
+				}
 			}
 
 			map(const map& x) : tree(x.key_comp(), x.get_allocator()) {
 				const_iterator pos = x.begin();
 				
-				while (pos != x.end())
+				while (pos != x.end()) {
 					tree.insert(*pos++);
+				}
 			}
 
 			map& operator=(const map& x) {
 				tree = x.tree;
 				key_cmp = x.key_cmp;
-				
+
 				return *this;
 			}
 
@@ -138,15 +140,18 @@ namespace ft {
 			** Modifiers
 			*/
 
-			pair<iterator, bool> insert(const value_type& x) { return tree.insert(x); }
+			pair<iterator, bool> insert(const value_type& x) {
+				return tree.insert(x);
+			}
 			iterator insert(iterator position, const value_type& x) {
 				return tree.insert(x, position);
 			}
 			
 			template <typename InputIterator>
 			void insert(InputIterator first, InputIterator last) {
-				while (first != last)
+				while (first != last) {
 					tree.insert(*first++);
+				}
 			}
 
 			void erase(iterator position) {

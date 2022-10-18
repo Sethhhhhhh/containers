@@ -49,7 +49,7 @@ namespace ft {
 					return node;
 				
 				node_pointer	tmp = node;
-				while(node->left != _nil)
+				while(tmp->left != _nil)
 					tmp = tmp->left;
 				return (tmp);
 			}
@@ -185,6 +185,8 @@ namespace ft {
 					y->left->p = x;
 				y->p = x->p;
 				if (x->p == _nil)
+        			_root = y;
+				else if (x == x->p->left)
 					x->p->left = y;
 				else
 					x->p->right = y;
@@ -199,6 +201,8 @@ namespace ft {
 					y->right->p = x;
 				y->p = x->p;
 				if (x->p == _nil)
+        			_root = y;
+				else if (x->p == x->p->left)
 					x->p->right = y;
 				else
 					x->p->left = y;
@@ -248,14 +252,18 @@ namespace ft {
 			};
 			rbtree(const rbtree &x) {
 				clean();
-				for (const_iterator i = x.begin(); i != x.end(); i++)
+				for (const_iterator i = x.begin(); i != x.end(); i++) {
 					insert(*i);
+				}
 				return *this;
 			};
 			rbtree & operator=(const rbtree &x) {
 				clean();
-				for (const_iterator i = x.begin(); i != x.end(); i++)
+
+				for (const_iterator i = x.begin(); i != x.end(); i++) {
+					std::cout << i->second << std::endl;
 					insert(*i);
+				}
 				return *this;
 			};
 
@@ -263,10 +271,17 @@ namespace ft {
 			** Destructor
 			*/
 
-			~rbtree() {};
+			~rbtree() {
+				if (_root != _nil)
+					clean();
+				_node_alloc.deallocate(_nil, 1);
+			};
 
 			void	clean() {
 				_clean_tree(_root);
+				_root = _nil;
+				_root->right = _nil;
+    			_root->left = _nil;
 				_size = 0;				
 			}
 
@@ -329,16 +344,22 @@ namespace ft {
 
 				while (x != _nil) {
 					y = x;
-					if (is_equal(v, *x->data))
+					if (is_equal(v, *x->data)) {
             			return pair_type(iterator(x), false);
-					else if (_key_compare(v, *x->data))
+					}
+					else if (_key_compare(v, *x->data)) {
+						std::cout << "ok" << std::endl;
 						x = x->left;	
-					else
+					}
+					else {
+						std::cout << "ok" << std::endl;
 						x = x->right;
+					}
 				}
 
 				node_pointer z = create(v);
 				z->p = y;
+
 
 				if (y == _nil)
 					_root = z;
@@ -350,6 +371,7 @@ namespace ft {
 				z->left = _nil;
 				z->right = _nil;
 				z->color = true;
+				insert_fix(z);
 				_size++;
 
 				return pair_type(iterator(z), true);
@@ -393,7 +415,7 @@ namespace ft {
 			void	insert_fix(node_pointer z) {	
 				while (z->p->color) {
 					if (z->p == z->p->p->left) {
-						node_pointer y = z->p->right;
+						node_pointer y = z->p->p->right;
 						
 						if (y->color) {
 							z->p->color = false;
@@ -413,7 +435,7 @@ namespace ft {
 						}
 					}
 					else {
-						node_pointer y = z->p->left;
+						node_pointer y = z->p->p->left;
 						if (y->color) {
 							z->p->color = false;
 							y->color = false;
