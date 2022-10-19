@@ -26,8 +26,8 @@ namespace ft {
 			typedef red_black_tree_node<T>*										node_pointer;
 
 			typedef typename Alloc::template rebind<Node<value_type> >::other	size_allocator;
-			typedef typename Alloc::template rebind<value_type>::other			data_allocator;
-        	typedef typename Alloc::template rebind<node_type>::other			node_allocator;
+        	typedef typename Alloc::template rebind<value_type>::other  		data_allocator;
+       		typedef typename Alloc::template rebind<red_black_tree_node<value_type> >::other  node_allocator;
 
 			/*
 			** Variable
@@ -250,6 +250,8 @@ namespace ft {
 			
 			rbtree();
 			explicit rbtree(const Cmp compare, const Alloc allocator) : _data_alloc(allocator), _key_compare(compare), _size(0) {
+				_size = 0;
+
 				_nil = _node_alloc.allocate(1);
 				_nil->color = false;
 				_nil->data = NULL;

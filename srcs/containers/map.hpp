@@ -7,6 +7,7 @@
 #include "../utils/reverse_iterator.hpp"
 #include "../utils/lexicographical_compare.hpp"
 #include "../utils/equal.hpp"
+#include <memory>
 
 
 #include <algorithm>
@@ -52,10 +53,10 @@ namespace ft {
 			**	Typedef
 			*/
 
-			typedef	rbtree<value_type, value_compare, Alloc>	tree_type;
-			typedef typename tree_type::pair_type				pair_type;
-			typedef typename tree_type::pair_range				pair_range;
-			typedef typename tree_type::const_pair_range		const_pair_range;
+			typedef	rbtree<value_type, value_compare, allocator_type>	tree_type;
+			typedef typename tree_type::pair_type						pair_type;
+			typedef typename tree_type::pair_range						pair_range;
+			typedef typename tree_type::const_pair_range				const_pair_range;
 
 			key_compare key_cmp;
         	tree_type  	tree;
