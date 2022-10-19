@@ -8,6 +8,9 @@
 #include "../utils/lexicographical_compare.hpp"
 #include "../utils/equal.hpp"
 
+
+#include <algorithm>
+
 namespace ft {
 
 	template <
@@ -78,7 +81,7 @@ namespace ft {
 
 			map(const map& x) : tree(x.key_comp(), x.get_allocator()) {
 				const_iterator pos = x.begin();
-				
+
 				while (pos != x.end()) {
 					tree.insert(*pos++);
 				}
@@ -126,16 +129,9 @@ namespace ft {
 			*/
 
 			mapped_type& operator[](const key_type& k) {
-				value_type x = ft::make_pair(k, mapped_type());
-    			return (((tree.insert(x)).first)->second);
+				value_type v = ft::make_pair(k, mapped_type());
+    			return (((tree.insert(v)).first)->second);
 			}
-			// mapped_type& at(const key_type& k) {
-				
-			// }
-			// const mapped_type& at (const key_type& k) const {
-				
-			// }
-
 			/*
 			** Modifiers
 			*/
@@ -244,43 +240,47 @@ namespace ft {
 	** Non-member functions
 	*/
 
-	template <typename Key, typename T, typename Cmp, typename Alloc>
-	bool	operator==(const map<Key, T, Cmp, Alloc>& lhs, const map<Key, T, Cmp, Alloc>& rhs) {
-		if (lhs.size() == rhs.size())
-			return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
-		return (false);
+	template <typename Key, typename T, typename _Cmp, typename _Alloc>
+	bool
+	operator==(map<Key, T, _Cmp, _Alloc> const &lhs,	map<Key, T, _Cmp, _Alloc> const &rhs)
+	{
+		if (lhs.size() != rhs.size())
+			return (false);
+		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 	}
 
 	template <typename Key, typename T, typename Cmp, typename Alloc>
-	bool	operator!=(const map<Key, T, Cmp, Alloc>& lhs, const map<Key, T, Cmp, Alloc>& rhs) {
+	bool
+	operator<(map<Key, T, Cmp, Alloc> const &lhs, map<Key, T, Cmp, Alloc> const &rhs)
+	{
+		return (std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+	}
+
+	template <typename Key, typename T, typename Cmp, typename Alloc>
+	bool
+	operator!=(map<Key, T, Cmp, Alloc> const &lhs, map<Key, T, Cmp, Alloc> const &rhs)
+	{
 		return (!(lhs == rhs));
 	}
 
 	template <typename Key, typename T, typename Cmp, typename Alloc>
-	bool	operator<(const map<Key, T, Cmp, Alloc>& lhs, const map<Key, T, Cmp, Alloc>& rhs) {
-		if (lhs != rhs)
-			return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-		return (false);
-	}
-
-	template <typename Key, typename T, typename Cmp, typename Alloc>
-	bool	operator<=(const map<Key, T, Cmp, Alloc>& lhs, const map<Key, T, Cmp, Alloc>& rhs) {
-		if (lhs == rhs)
-			return (true);
-		return (!(rhs < lhs));
-	}
-
-	template <typename Key, typename T, typename Cmp, typename Alloc>
-	bool	operator>(const map<Key, T, Cmp, Alloc>& lhs, const map<Key, T, Cmp, Alloc>& rhs) {
-		if (lhs == rhs)
-			return (false);
+	bool
+	operator>(map<Key, T, Cmp, Alloc> const &lhs, map<Key, T, Cmp, Alloc> const &rhs)
+	{
 		return (rhs < lhs);
 	}
 
 	template <typename Key, typename T, typename Cmp, typename Alloc>
-	bool	operator>=(const map<Key, T, Cmp, Alloc>& lhs, const map<Key, T, Cmp, Alloc>& rhs) {
-		if (lhs == rhs)
-			return (true);
+	bool
+	operator<=(map<Key, T, Cmp, Alloc> const &lhs, map<Key, T, Cmp, Alloc> const &rhs)
+	{
+		return (!(rhs < lhs));
+	}
+
+	template <typename Key, typename T, typename Cmp, typename Alloc>
+	bool
+	operator>=(map<Key, T, Cmp, Alloc> const &lhs, map<Key, T, Cmp, Alloc> const &rhs)
+	{
 		return (!(lhs < rhs));
 	}
 };

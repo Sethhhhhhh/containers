@@ -57,6 +57,17 @@ namespace ft {
 			pointer	increment();
 			pointer	decrement();
 	};
+
+	template <typename T>
+	struct Node {
+		T				data;
+		bool			color;
+		struct node*	left;
+		struct node*	right;
+		struct node*	p;
+
+	};
 };
+
 
 #endif

@@ -19,14 +19,15 @@ namespace ft {
 			** Typedef
 			*/
 
-			typedef	size_t												size_type;
-			typedef ptrdiff_t											difference_type;
-			typedef T													value_type;
-			typedef red_black_tree_node<T>								node_type;
-			typedef red_black_tree_node<T>*								node_pointer;
+			typedef	size_t														size_type;
+			typedef ptrdiff_t													difference_type;
+			typedef T															value_type;
+			typedef red_black_tree_node<T>										node_type;
+			typedef red_black_tree_node<T>*										node_pointer;
 
-			typedef typename Alloc::template rebind<value_type>::other	data_allocator;
-        	typedef typename Alloc::template rebind<node_type>::other	node_allocator;
+			typedef typename Alloc::template rebind<Node<value_type> >::other	size_allocator;
+			typedef typename Alloc::template rebind<value_type>::other			data_allocator;
+        	typedef typename Alloc::template rebind<node_type>::other			node_allocator;
 
 			/*
 			** Variable
@@ -96,12 +97,11 @@ namespace ft {
 			*/
 
 			void	_clean_node(node_pointer node) {
-				if (node == _nil)
-					return ;
-
-				_data_alloc.destroy(node->data);
-				_data_alloc.deallocate(node->data, 1);    
-				_node_alloc.deallocate(node, 1);
+				if (node != _nil) {
+					_data_alloc.destroy(node->data);
+					_data_alloc.deallocate(node->data, 1);    
+					_node_alloc.deallocate(node, 1);
+				}
 			}
 
 			void	transplant(node_pointer u, node_pointer v) {
@@ -117,58 +117,70 @@ namespace ft {
 			void	remove_fix(node_pointer x) {
 				while (x != _root && !x->color) {
 					if (x == x->p->left) {
-						node_pointer w = x->p->left;
-						
-						if (w->color) {
+						node_pointer w = x->p->right;
+
+						if (w->color == true) {
 							w->color = false;
 							x->p->color = true;
+
 							left_rotate(x->p);
+							
 							w = x->p->right;
 						}
 						if (!w->left->color && !w->right->color) {
 							w->color = true;
 							x = x->p;
 						}
-						else {
+						else {   
 							if (!w->right->color) {
 								w->left->color = false;
 								w->color = true;
+
 								right_rotate(w);
+								
 								w = x->p->right;
 							}
 							w->color = x->p->color;
 							x->p->color = false;
 							w->right->color = false;
+
 							left_rotate(x->p);
+							
 							x = _root;
 						}
-					} else {
-						node_pointer w = x->p->right;
-						
+					}
+					else {
+						node_pointer w = x->p->left;
 						if (w->color) {
 							w->color = false;
 							x->p->color = true;
+							
 							right_rotate(x->p);
+							
 							w = x->p->left;
 						}
 						if (!w->right->color && !w->left->color) {
-								w->color = true;
-								x = x->p;
+							w->color = true;
+							x = x->p;
 						}
 						else {
 							if (!w->left->color) {
 								w->right->color = false;
 								w->color = true;
+								
 								left_rotate(w);
+								
 								w = x->p->left;
 							}
 							w->color = x->p->color;
 							x->p->color = false;
 							w->left->color = false;
+							
 							right_rotate(x->p);
+							
 							x = _root;
 						}
-					}
+							}
 				}
 				x->color = false;
 			}
@@ -178,31 +190,31 @@ namespace ft {
 			*/
 
 			void	left_rotate(node_pointer x) {
-				node_pointer y = x->right;
+				node_pointer   y = x->right;
 
 				x->right = y->left;
 				if (y->left != _nil)
 					y->left->p = x;
 				y->p = x->p;
 				if (x->p == _nil)
-        			_root = y;
+					_root = y;
 				else if (x == x->p->left)
 					x->p->left = y;
 				else
 					x->p->right = y;
 				y->left = x;
-				x->p = y;
+   				x->p = y;
 			}
 			void	right_rotate(node_pointer x) {
-				node_pointer y = x->left;
+				node_pointer   y = x->left;
 
 				x->left = y->right;
 				if (y->right != _nil)
 					y->right->p = x;
 				y->p = x->p;
 				if (x->p == _nil)
-        			_root = y;
-				else if (x->p == x->p->left)
+					_root = y;
+				else if (x == x->p->right)
 					x->p->right = y;
 				else
 					x->p->left = y;
@@ -261,7 +273,6 @@ namespace ft {
 				clean();
 
 				for (const_iterator i = x.begin(); i != x.end(); i++) {
-					std::cout << i->second << std::endl;
 					insert(*i);
 				}
 				return *this;
@@ -285,46 +296,52 @@ namespace ft {
 				_size = 0;				
 			}
 
-			void	remove(node_pointer z) {
-				node_pointer	x;
-				node_pointer	y = z;
-
-				bool original_color = y->color;
-
-				if (z->left == _nil) {
-					x = z->right;
-					transplant(z, z->right);
-				} else if (z->right == _nil) {
-					x = z->left;
-					transplant(z, z->left);
-				} else {
-					y = minimum(z->right);
-					x = y->right;
-					if (y->p == z)
-						x->p = y;
-					else {
-						transplant(y, y->right);
-						y->right = z->right;
-						y->right->p = y;
-					}
-					transplant(z, y->right);
-					y->left = z->left;
-					y->left->p = y;
-					y->color = z->color;
+			void	remove(node_pointer node) {
+				node_pointer tmp_x;
+				node_pointer tmp_y;
+				tmp_y = node;
+				bool node_isred = node->color;
+				if (node->left == _nil)
+				{
+					tmp_x = node->right;
+					transplant(node, node->right);
 				}
-				if (!original_color)
-					remove_fix(x);
-
+				else if (node->right == _nil)
+				{
+					tmp_x = node->left;
+					transplant(node, node->left);
+				}
+				else
+				{
+					tmp_y = minimum(node->right);
+					node_isred = tmp_y->color;
+					tmp_x = tmp_y->right;
+					if (tmp_y->p == node)
+						tmp_x->p = tmp_y;
+					else
+					{
+						transplant(tmp_y, tmp_y->right);
+						tmp_y->right = node->right;
+						tmp_y->right->p = tmp_y;
+					}
+					transplant(node, tmp_y);
+					tmp_y->left = node->left;
+					tmp_y->left->p = tmp_y;
+					tmp_y->color = node->color;
+				}
+				_clean_node(node);
+				if (node_isred == false)
+					remove_fix(tmp_x);
 				_nil->max = maximum(_root);
 				_nil->min = minimum(_root);
 				_nil->p = _nil;
-				--_size;
+				_size--;
 			}
 
 			node_pointer	search(const value_type &v) const {
 				node_pointer	x = _root;
 
-				while (x != _nil && !is_equal(v, *(x->data))) {
+				while (x != _nil && !is_equal(v, *x->data)) {
 					if (_key_compare(v, *(x->data)))
 						x = x->left;
 					else
@@ -348,11 +365,9 @@ namespace ft {
             			return pair_type(iterator(x), false);
 					}
 					else if (_key_compare(v, *x->data)) {
-						std::cout << "ok" << std::endl;
 						x = x->left;	
 					}
 					else {
-						std::cout << "ok" << std::endl;
 						x = x->right;
 					}
 				}
@@ -360,13 +375,14 @@ namespace ft {
 				node_pointer z = create(v);
 				z->p = y;
 
-
 				if (y == _nil)
 					_root = z;
-				else if (_key_compare(v, *y->data))
+				else if (_key_compare(v, *y->data)) {
 					y->left = z;
-				else
+				}
+				else {
 					y->right = z;
+				}
 
 				z->left = _nil;
 				z->right = _nil;
@@ -388,7 +404,7 @@ namespace ft {
 				while (x != _nil) {
 					y = x;
 					if (_key_compare(v, *x->data))
-						x = x->left;	
+						x = x->left;
 					else
 						x = x->right;
 				}
@@ -406,6 +422,7 @@ namespace ft {
 				z->left = _nil;
 				z->right = _nil;
 				z->color = true;
+
 				insert_fix(z);
 				_size++;
 
@@ -436,6 +453,7 @@ namespace ft {
 					}
 					else {
 						node_pointer y = z->p->p->left;
+						
 						if (y->color) {
 							z->p->color = false;
 							y->color = false;
@@ -516,7 +534,7 @@ namespace ft {
 				iterator	ite = end();
 
 				while(it != ite) {
-					if (_key_compare(*it, x))
+					if (_key_compare(x, *it))
 						return it;
 					it++;
 				}
@@ -528,7 +546,7 @@ namespace ft {
 				const_iterator	ite = end();
 
 				while(it != ite) {
-					if (_key_compare(*it, x))
+					if (_key_compare(x, *it))
 						return it;
 					it++;
 				}
@@ -551,7 +569,9 @@ namespace ft {
 
 
 			size_type	get_max_size() const {
-				return _node_alloc.max_size() / sizeof(T);
+				size_allocator	x;
+
+				return x.max_size();
 			}
 
 			Cmp	get_key_compare() const { return _key_compare; }

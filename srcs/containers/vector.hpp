@@ -31,8 +31,8 @@ namespace ft
             typedef typename Alloc::reference                       reference;
             typedef typename Alloc::const_reference                 const_reference;
 
-            typedef typename ft::reverseIterator<iterator>			reverse_iterator;
-			typedef typename ft::reverseIterator<const_iterator>	const_reverse_iterator;
+            typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
+			typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 			/*
 			** Constructor
@@ -235,14 +235,14 @@ namespace ft
 			}
 
 			reference			at(size_type n) {
-				if (n > _alloc.max_size())
+				if (n > _size)
 					throw std::out_of_range("vector::_check_range");
 
 				return _start[n];
 			}
 
 			const_reference		at(size_type n) const {
-				if (n > _alloc.max_size())
+				if (n > _size)
 					throw std::out_of_range("vector::_check_range");
 
 				return _start[n];
@@ -307,7 +307,7 @@ namespace ft
 			}
 
 			void	push_back(const value_type& val) {
-				if (_capacity == 0) {
+				if (!_capacity) {
 					_start = _alloc.allocate(1);
 					_alloc.construct(_start, val);
 					_capacity = 1;
@@ -337,7 +337,7 @@ namespace ft
 			}
 
 			void	pop_back() {
-				if (empty())
+				if (!_size)
 					return;
 
 				_alloc.destroy(end() - 1);

@@ -45,7 +45,7 @@ namespace ft {
 			const_reference operator*() const { return *node->data; }
 			const_pointer operator->() const { return node->data; }
 
-			red_black_tree_iterator operator++() {
+			red_black_tree_iterator& operator++() {
 				increment();
 				return *this;
 			}
@@ -58,7 +58,7 @@ namespace ft {
 				return x;
 			}
 
-			red_black_tree_iterator operator--() {
+			red_black_tree_iterator& operator--() {
 				decrement();
 				return *this;
 			}
@@ -68,7 +68,7 @@ namespace ft {
 
 				decrement();
 				
-				return *this;
+				return x;
 			}
 
 			bool	operator==(const red_black_tree_iterator &x) const {
@@ -98,8 +98,8 @@ namespace ft {
 			}
 
 			void	decrement() {
-				if (node != node->nil) {
-					node = node->nil;
+				if (node == node->nil) {
+					node = node->nil->max;
 					return ;
 				}
 				if (node->left != node->nil) {
