@@ -277,8 +277,7 @@ namespace ft
 				size_type dist = std::distance(first, last);
 
 				_dealloc();
-				if (dist)
-				{
+				if (dist) {
 					if (dist > _alloc.max_size())
 						throw std::out_of_range("vector::_check_range");
 					_start = _alloc.allocate(dist);
@@ -311,11 +310,13 @@ namespace ft
 					_start = _alloc.allocate(1);
 					_alloc.construct(_start, val);
 					_capacity = 1;
+					_size++;
 
 					return;
 				}
-				if (_size + 1 <= _capacity) {
+				if (_size + 1 <= this->_capacity) {
 					_alloc.construct(_start + _size, val);
+					_size++;
 					return;
 				}
 
@@ -333,7 +334,7 @@ namespace ft
 				_dealloc();
 				_capacity = new_size;
 				_start = it;
-				_size = new_size;
+				_size = prev_size + 1;
 			}
 
 			void	pop_back() {
